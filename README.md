@@ -1,4 +1,4 @@
-# SOA
+# AGH SOA course
 
 Start JBoss WildFly with the Web Profile
 -------------------------
