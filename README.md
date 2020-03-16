@@ -21,4 +21,4 @@ _NOTE: The following build command assumes you have configured your Maven user s
 
         mvn clean package wildfly:deploy
 
-4. This will deploy `target/SOA-1.ear` to the running instance of the server.
+4. This will deploy `target/zad1.ear` to the running instance of the server.
