@@ -1,0 +1,5 @@
+pl\edu\agh\soa\pro1\models\Subject.class
+pl\edu\agh\soa\pro1\models\Subject$SubjectBuilder.class
+pl\edu\agh\soa\pro1\StudentController.class
+pl\edu\agh\soa\pro1\models\Student$StudentBuilder.class
+pl\edu\agh\soa\pro1\models\Student.class

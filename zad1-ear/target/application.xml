@@ -8,7 +8,7 @@
     </web>
   </module>
   <module>
-    <ejb>pl.edu.agh.soa.lab-zad1-ejb-1.0.jar</ejb>
+    <ejb>pl.edu.agh.soa.lab-soap-api-1.0.jar</ejb>
   </module>
   <library-directory>lib</library-directory>
 </application>
