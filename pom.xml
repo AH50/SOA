@@ -33,8 +33,9 @@
         </license>
     </licenses>
     <modules>
+        <module>zad1-model</module>
         <module>soap-api</module>
-        <module>zad1-web</module>
+        <module>rest-api</module>
         <module>zad1-ear</module>
         <module>soap-connector</module>
     </modules>
@@ -79,11 +80,18 @@
                 <type>ejb</type>
             </dependency>
 
+            <dependency>
+                <groupId>pl.edu.agh.soa.lab</groupId>
+                <artifactId>zad1-model</artifactId>
+                <version>${project.version}</version>
+                <type>ejb</type>
+            </dependency>
+
             <!-- Define the version of the WAR so that we don't need to repeat 
                 ourselves in every module -->
             <dependency>
                 <groupId>pl.edu.agh.soa.lab</groupId>
-                <artifactId>zad1-web</artifactId>
+                <artifactId>rest-api</artifactId>
                 <version>${project.version}</version>
                 <type>war</type>
                 <scope>compile</scope>

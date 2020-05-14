@@ -3,8 +3,8 @@
   <display-name>zad1-ear</display-name>
   <module>
     <web>
-      <web-uri>pl.edu.agh.soa.lab-zad1-web-1.0.war</web-uri>
-      <context-root>/zad1-web</context-root>
+      <web-uri>pl.edu.agh.soa.lab-rest-api-1.0.war</web-uri>
+      <context-root>/rest-api</context-root>
     </web>
   </module>
   <module>
