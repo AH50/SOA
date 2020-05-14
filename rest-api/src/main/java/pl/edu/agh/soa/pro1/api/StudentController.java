@@ -2,6 +2,9 @@ package pl.edu.agh.soa.pro1.api;
 
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import pl.edu.agh.soa.pro1.models.Student;
 import pl.edu.agh.soa.pro1.models.StudentRepository;
 
@@ -13,7 +16,7 @@ import java.util.List;
 
 @Api(value = "StudentApi")
 @Path("/student")
-public class StudentControler {
+public class StudentController {
 
     static StudentRepository studentRepository = new StudentRepository();
 
@@ -84,6 +87,10 @@ public class StudentControler {
     @GET
     @Path("/getPhoto/{studentID}")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Add student", response = Student.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "This is student photo.",response = String.class),
+            @ApiResponse(code = 404, message = "Student doesn't exist.")})
     public Response getStudentPhoto(@PathParam("studentID") int studentID) {
 
         List<Student> studentsList = studentRepository.getStudentList();
@@ -99,12 +106,16 @@ public class StudentControler {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Add student", response = Student.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Student added.",response = Student.class),
+            @ApiResponse(code = 409, message = "Student already exists.")})
     public Response addStudent(Student student) {
 
         Response r = getStudentById(student.getStudentId());
         if (r.getStatus() == 404) {
             studentRepository.addStudent(student);
-            return Response.status(Response.Status.OK).entity(student).build();
+            return Response.status(Response.Status.CREATED).entity(student).build();
         }
         return Response.status(Response.Status.CONFLICT).entity("Student alredy exists").build();
 
