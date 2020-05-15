@@ -24,7 +24,7 @@ public class Consume {
             System.out.println("Surname: "+student.getSurname());
             System.out.println("Student ID: "+student.getStudentId());
 
-            for(Subject subject : student.getSubjects().getSubject()){
+            for(Subject subject : student.getSubjects().getSubjectList()){
                 System.out.println("Subject name: "+subject.getName());
                 System.out.println("Subject teacher: "+subject.getTeacher());
                 System.out.println("Subject ECTS: "+subject.getECTS());

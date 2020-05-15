@@ -20,14 +20,15 @@ public class Student {
     private String surname;
     private int studentId;
     private String photoInBase64;
+    private List<Subject> subjectList;
 
     @XmlElementWrapper(name = "Subjects")
-    @XmlElement(name = "Subject")
+    @XmlElement(name = "subjectList")
     public List<Subject> getSubjectList() {
         return subjectList;
     }
 
-    private List<Subject> subjectList;
+
 
     public Student(String name, String surname, int studentId, String photoInBase64, List<Subject> subjectList) {
         this.name = name;
