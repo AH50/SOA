@@ -40,7 +40,7 @@ public class StudentRepository {
     }
     public Student getStudentBySurname(String surname){
         for (Student student:students){
-            if (student.getName().equals(surname)) {
+            if (student.getSurname().equals(surname)) {
                 return student;
             }
         }

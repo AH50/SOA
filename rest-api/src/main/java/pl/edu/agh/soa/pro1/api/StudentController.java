@@ -20,28 +20,36 @@ public class StudentController {
     static StudentRepository studentRepository = new StudentRepository();
 
     @GET
-    @Path("/hello")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String sayPlainTextHello() {
-        return "Hello world!";
-    }
-
-    @GET
     @Path("/")
+    @ApiOperation(value = "Get students")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAllStudents(@QueryParam("ID") String Id,
+    public Response getAllStudents(@QueryParam("ID") int Id,
                                    @QueryParam("firstName") String name,
                                    @QueryParam("surname") String surname) {
         List<Student> studentsList = studentRepository.getStudentList();
 
-        if (studentsList == null || studentsList.size() == 0)
+        if (studentsList == null || studentsList.size() == 0){
             return Response.status(Response.Status.NOT_FOUND).entity("Student database is empty").build();
+        }
+        if(name!=null){
+            Student student = studentRepository.getStudentByName(name);
+            return Response.status(Response.Status.OK).entity(student).build();
+        }
+        if(surname!=null){
+            Student student = studentRepository.getStudentBySurname(surname);
+            return Response.status(Response.Status.OK).entity(student).build();
+        }
+        if(Id!=0){
+            Student student = studentRepository.getStudentByID(Id);
+            return Response.status(Response.Status.OK).entity(student).build();
+        }
 
         return Response.status(Response.Status.OK).entity(studentsList).build();
     }
 
     @GET
     @Path("/{studentID}")
+    @ApiOperation(value = "Get student")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getStudentById(@PathParam("studentID") int studentID) {
         Student student = studentRepository.getStudentByID(studentID);
@@ -55,6 +63,7 @@ public class StudentController {
 
     @PUT
     @Path("/{studentID}/photo")
+    @ApiOperation(value = "Change student photo")
     @Produces(MediaType.APPLICATION_JSON)
     @JWTTokenNeeded
     public Response setPhoto(@PathParam("studentID") int studentID , @ApiParam(required=true) String photoBase64) {
@@ -73,6 +82,7 @@ public class StudentController {
     @PUT
     @Path("/{studentID}/surname")
     @Produces(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Change student surname")
     @JWTTokenNeeded
     public Response updateStudentSurname(@PathParam("studentID") int studentID, @ApiParam(required=true, name = "Surname") String newSurname) {
 
@@ -111,7 +121,7 @@ public class StudentController {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Student added.", response = Student.class),
             @ApiResponse(code = 409, message = "Student already exists.")})
-    @JWTTokenNeeded
+   @JWTTokenNeeded
     public Response addStudent(Student student) {
 
         Response r = getStudentById(student.getStudentId());
