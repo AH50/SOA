@@ -99,7 +99,8 @@ public class StudentController {
     @ApiOperation(value = "Get student photo", response = byte.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "This is student photo."),
-            @ApiResponse(code = 404, message = "Student doesn't exist.")})
+            @ApiResponse(code = 403, message = "Student don't have photo."),
+            @ApiResponse(code = 404, message = "Student not found.")})
 
     public Response getStudentPhoto(@PathParam("studentID") int studentID) {
 
@@ -107,9 +108,12 @@ public class StudentController {
 
         byte[] imageBytes = Base64.getDecoder().decode(student.getPhotoInBase64());
         if(student!=null){
-            return Response.status(Response.Status.OK).entity(imageBytes).build();
+            if(!student.getPhotoInBase64().equals("")) {
+                return Response.status(Response.Status.OK).entity(imageBytes).build();
+            }
+            return Response.status(Response.Status.FORBIDDEN).entity("Student don't have photo.").build();
         }
-        return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
+        return Response.status(Response.Status.NOT_FOUND).entity("Student not found.").build();
 
     }
 

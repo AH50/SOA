@@ -79,7 +79,7 @@ public class StudentRepository {
                 .surname("Nowak")
                 .studentId(123)
                 .subjectList(subjects)
-                .photoInBase64("Photo not seted")
+                .photoInBase64("")
                 .build();
         Student student2 = Student.builder()
                 .name("Jan")
