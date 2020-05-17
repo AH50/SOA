@@ -66,7 +66,7 @@ public class StudentController {
     @ApiOperation(value = "Change student photo")
     @Produces(MediaType.APPLICATION_JSON)
     @JWTTokenNeeded
-    public Response setPhoto(@PathParam("studentID") int studentID , @ApiParam(required=true) String photoBase64) {
+    public Response setPhoto(@PathParam("studentID") int studentID , @ApiParam(required=true) @QueryParam("photo") String photoBase64) {
 
         List<Student> studentsList = studentRepository.getStudentList();
 
@@ -84,7 +84,7 @@ public class StudentController {
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Change student surname")
     @JWTTokenNeeded
-    public Response updateStudentSurname(@PathParam("studentID") int studentID, @ApiParam(required=true, name = "Surname") String newSurname) {
+    public Response updateStudentSurname(@PathParam("studentID") int studentID, @ApiParam(required=true, name = "Surname") @QueryParam("surname") String newSurname) {
 
         Student student = studentRepository.changeStudentSurname(studentID,newSurname);
         if(student!=null){
