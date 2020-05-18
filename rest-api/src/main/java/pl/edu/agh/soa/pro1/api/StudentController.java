@@ -142,7 +142,7 @@ public class StudentController {
     @Produces("application/protobuf")
     @Path("/{id}/protobuf")
     @ApiOperation("Get Student by ID - Protobuf")
-    public Response getStudentByIdProto(@ApiParam(required = true) @PathParam("id") int ID) {
+    public Response getStudentByIdProtobuf(@ApiParam(required = true) @PathParam("id") int ID) {
 
         var studentBuilder = StudentProtobuf.Student.newBuilder();
         if (studentRepository.getStudentByID(ID) != null) {
