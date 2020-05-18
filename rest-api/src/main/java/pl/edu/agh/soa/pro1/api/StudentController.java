@@ -3,6 +3,8 @@ package pl.edu.agh.soa.pro1.api;
 import io.swagger.annotations.*;
 import pl.edu.agh.soa.pro1.JWT.JWTTokenNeeded;
 import pl.edu.agh.soa.pro1.models.Student;
+
+import pl.edu.agh.soa.pro1.models.StudentProtobuf;
 import pl.edu.agh.soa.pro1.models.StudentRepository;
 
 import javax.ws.rs.*;
@@ -28,18 +30,18 @@ public class StudentController {
                                    @QueryParam("surname") String surname) {
         List<Student> studentsList = studentRepository.getStudentList();
 
-        if (studentsList == null || studentsList.size() == 0){
+        if (studentsList == null || studentsList.size() == 0) {
             return Response.status(Response.Status.NOT_FOUND).entity("Student database is empty").build();
         }
-        if(name!=null){
+        if (name != null) {
             Student student = studentRepository.getStudentByName(name);
             return Response.status(Response.Status.OK).entity(student).build();
         }
-        if(surname!=null){
+        if (surname != null) {
             Student student = studentRepository.getStudentBySurname(surname);
             return Response.status(Response.Status.OK).entity(student).build();
         }
-        if(Id!=0){
+        if (Id != 0) {
             Student student = studentRepository.getStudentByID(Id);
             return Response.status(Response.Status.OK).entity(student).build();
         }
@@ -54,7 +56,7 @@ public class StudentController {
     public Response getStudentById(@PathParam("studentID") int studentID) {
         Student student = studentRepository.getStudentByID(studentID);
 
-        if(student!=null){
+        if (student != null) {
             return Response.status(Response.Status.OK).entity(student).build();
         }
 
@@ -66,7 +68,7 @@ public class StudentController {
     @ApiOperation(value = "Change student photo")
     @Produces(MediaType.APPLICATION_JSON)
     @JWTTokenNeeded
-    public Response setPhoto(@PathParam("studentID") int studentID , @ApiParam(required=true) @QueryParam("photo") String photoBase64) {
+    public Response setPhoto(@PathParam("studentID") int studentID, @ApiParam(required = true) @QueryParam("photo") String photoBase64) {
 
         List<Student> studentsList = studentRepository.getStudentList();
 
@@ -84,10 +86,10 @@ public class StudentController {
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Change student surname")
     @JWTTokenNeeded
-    public Response updateStudentSurname(@PathParam("studentID") int studentID, @ApiParam(required=true, name = "Surname") @QueryParam("surname") String newSurname) {
+    public Response updateStudentSurname(@PathParam("studentID") int studentID, @ApiParam(required = true, name = "Surname") @QueryParam("surname") String newSurname) {
 
-        Student student = studentRepository.changeStudentSurname(studentID,newSurname);
-        if(student!=null){
+        Student student = studentRepository.changeStudentSurname(studentID, newSurname);
+        if (student != null) {
             return Response.status(Response.Status.OK).entity(student).build();
         }
         return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
@@ -107,8 +109,8 @@ public class StudentController {
         Student student = studentRepository.getStudentByID(studentID);
 
         byte[] imageBytes = Base64.getDecoder().decode(student.getPhotoInBase64());
-        if(student!=null){
-            if(!student.getPhotoInBase64().equals("")) {
+        if (student != null) {
+            if (!student.getPhotoInBase64().equals("")) {
                 return Response.status(Response.Status.OK).entity(imageBytes).build();
             }
             return Response.status(Response.Status.FORBIDDEN).entity("Student don't have photo.").build();
@@ -125,7 +127,7 @@ public class StudentController {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Student added.", response = Student.class),
             @ApiResponse(code = 409, message = "Student already exists.")})
-   @JWTTokenNeeded
+    @JWTTokenNeeded
     public Response addStudent(Student student) {
 
         Response r = getStudentById(student.getStudentId());
@@ -135,4 +137,25 @@ public class StudentController {
         }
         return Response.status(Response.Status.CONFLICT).entity("Student alredy exists").build();
     }
+
+    @GET
+    @Produces("application/protobuf")
+    @Path("/{id}/protobuf")
+    @ApiOperation("Get Student by ID - Protobuf")
+    public Response getStudentByIdProto(@ApiParam(required = true) @PathParam("id") int ID) {
+
+        var studentBuilder = StudentProtobuf.Student.newBuilder();
+        if (studentRepository.getStudentByID(ID) != null) {
+            Student student = studentRepository.getStudentByID(ID);
+
+            studentBuilder.setId(student.getStudentId()).setName(student.getName()).setSurname(student.getSurname());
+            var newStudent = studentBuilder.build();
+            return Response.status(Response.Status.OK).entity(newStudent).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+    }
 }
+
+
+

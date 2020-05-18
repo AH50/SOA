@@ -1,11 +1,14 @@
+import models.Student;
+import models.Subject;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
-import pl.edu.agh.soa.pro1.models.Student;
-import pl.edu.agh.soa.pro1.models.Subject;
 
 
-import javax.swing.*;
+import pl.edu.agh.soa.pro1.models.StudentProtobuf;
+import protobuf.MessageWriter;
+
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 import java.io.*;
@@ -13,15 +16,15 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
-public class Client {
+public class ClientRest {
     private ResteasyClient resteasyClient;
     private static String token = null;
 
-    public Client() {
+    public ClientRest() {
         this.resteasyClient = new ResteasyClientBuilder().build();
     }
 
-    public Client(String username, String password) {
+    public ClientRest(String username, String password) {
         this.resteasyClient = new ResteasyClientBuilder().build();
 
         ResteasyWebTarget resteasyWebTarget = resteasyClient.target("http://localhost:8080/rest-api/app//authorization/login");
@@ -132,9 +135,24 @@ public class Client {
     }
 
 
+//PROBOBUF
+private StudentProtobuf.Student testGetStudentByIdProtobuf(int id){
+    StudentProtobuf.Student student = null;
+    ResteasyWebTarget target = resteasyClient.target("http://localhost:8080/rest-api/app/students/"+id+"/protobuf").register(MessageWriter.class);
+    Response response = target.request().get();
+
+    if(response.getStatus() == 200) {
+        student = response.readEntity(StudentProtobuf.Student.class);
+    }
+    response.close();
+
+    return student;
+}
+
+
     public static void main(String[] args) {
 
-        Client client = new Client("admin", "admin");
+        ClientRest client = new ClientRest("admin", "admin");
 
         //lista studentów
         for (Student student : client.getAllStudents()) {
@@ -157,16 +175,19 @@ public class Client {
                 .subjectList(null)
                 .photoInBase64("")
                 .build();
+
         Subject subject = Subject.builder()
                 .name("Programowanie")
                 .teacher("Rafał Kowalksi")
                 .ECTS(5)
                 .build();
+
         Subject subject2 = Subject.builder()
                 .name("Teoria obliczeń")
                 .teacher("Tomasz Nowak")
                 .ECTS(3)
                 .build();
+
 
         List<Subject> subjects = new ArrayList<>();
         subjects.add(subject);
@@ -188,6 +209,12 @@ public class Client {
         System.out.println("Get photo");
         client.getPhoto(123);
 
+        //Protobuf
+        System.out.println("\nGet student by ID - Protobuf");
+        System.out.println(client.testGetStudentByIdProtobuf(123));
+
+
         client.resteasyClient.close();
+
     }
 }
