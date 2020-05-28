@@ -1,17 +1,23 @@
 package pl.edu.agh.soa.pro1.api;
 
 import io.swagger.annotations.*;
+import pl.edu.agh.soa.pro1.*;
 import pl.edu.agh.soa.pro1.JWT.JWTTokenNeeded;
+import pl.edu.agh.soa.pro1.models.Mark;
 import pl.edu.agh.soa.pro1.models.Student;
 
 import pl.edu.agh.soa.pro1.models.StudentProtobuf;
 import pl.edu.agh.soa.pro1.models.StudentRepository;
 
+import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -20,6 +26,10 @@ import java.util.List;
 public class StudentController {
 
     static StudentRepository studentRepository = new StudentRepository();
+    @EJB
+    private MarkDao markDao = new MarkDao();
+    @EJB
+    private StudentDao studentDao = new StudentDao();
 
     @GET
     @Path("/")
@@ -53,21 +63,29 @@ public class StudentController {
     @Path("/{studentID}")
     @ApiOperation(value = "Get student")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getStudentById(@PathParam("studentID") int studentID) {
-        Student student = studentRepository.getStudentByID(studentID);
-
-        if (student != null) {
-            return Response.status(Response.Status.OK).entity(student).build();
+    public Response getStudentById(@PathParam("studentID") int studentId) {
+//        Student student = studentRepository.getStudentByID(studentID);
+//
+//        if (student != null) {
+//            return Response.status(Response.Status.OK).entity(student).build();
+//        }
+//
+//        return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
+        Student student;
+        try {
+            student = studentDao.findbystudentId(studentId);
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).header("Access-Control-Allow-Methods", "GET").build();
         }
 
-        return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
+        return Response.ok().entity(student).status(Response.Status.OK).entity(student).build();
     }
 
     @PUT
     @Path("/{studentID}/photo")
     @ApiOperation(value = "Change student photo")
     @Produces(MediaType.APPLICATION_JSON)
-    @JWTTokenNeeded
+//    @JWTTokenNeeded
     public Response setPhoto(@PathParam("studentID") int studentID, @ApiParam(required = true) @QueryParam("photo") String photoBase64) {
 
         List<Student> studentsList = studentRepository.getStudentList();
@@ -85,7 +103,7 @@ public class StudentController {
     @Path("/{studentID}/surname")
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Change student surname")
-    @JWTTokenNeeded
+//    @JWTTokenNeeded
     public Response updateStudentSurname(@PathParam("studentID") int studentID, @ApiParam(required = true, name = "Surname") @QueryParam("surname") String newSurname) {
 
         Student student = studentRepository.changeStudentSurname(studentID, newSurname);
@@ -127,12 +145,13 @@ public class StudentController {
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Student added.", response = Student.class),
             @ApiResponse(code = 409, message = "Student already exists.")})
-    @JWTTokenNeeded
+//    @JWTTokenNeeded
     public Response addStudent(Student student) {
 
         Response r = getStudentById(student.getStudentId());
         if (r.getStatus() == 404) {
-            studentRepository.addStudent(student);
+//            studentRepository.addStudent(student);
+            studentDao.save(student);
             return Response.status(Response.Status.CREATED).entity(student).build();
         }
         return Response.status(Response.Status.CONFLICT).entity("Student alredy exists").build();
@@ -154,6 +173,45 @@ public class StudentController {
         } else {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+    }
+
+    @EJB
+    private SandwichDao sandwichDao = new SandwichDao();
+    @GET
+    @Path("/addkanapka/add")
+    public Response addxxxx() {
+
+        SandwichEntity sandwichEntity = new SandwichEntity();
+        sandwichEntity.setName("ssssssssxxxxxxxxx");
+        sandwichDao.add(sandwichEntity);
+
+        return Response.status(Response.Status.OK).entity("Add kanapka").build();
+    }
+
+
+    @GET
+    @Path("/addmark/add")
+    public Response addmark() {
+
+        MarkEntity markEntity = new MarkEntity();
+        markEntity.setMark(5);
+        markDao.add(markEntity);
+
+        return Response.status(Response.Status.OK).entity("Add kanapka").build();
+    }
+
+
+
+    @GET
+    @Path("/addmark/addStudentToDatabase")
+    public Response addstu() {
+
+
+        studentDao.save(studentRepository.getStudentByID(123));
+        studentDao.save(studentRepository.getStudentByID(1234));
+
+
+        return Response.status(Response.Status.OK).entity("Add student to database").build();
     }
 }
 

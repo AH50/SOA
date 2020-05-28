@@ -41,6 +41,22 @@
 
    <dependencies>
 
+
+      <dependency>
+         <groupId>pl.edu.agh.soa.lab</groupId>
+         <artifactId>zad1-dao</artifactId>
+         <version>1.0</version>
+         <scope>compile</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>pl.edu.agh.soa.lab</groupId>
+         <artifactId>zad3-jpa</artifactId>
+         <version>1.0</version>
+         <scope>compile</scope>
+      </dependency>
+
+
       <dependency>
          <groupId>io.swagger</groupId>
          <artifactId>swagger-jaxrs</artifactId>

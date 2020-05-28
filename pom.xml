@@ -34,11 +34,15 @@
     </licenses>
     <modules>
         <module>zad1-model</module>
+        <module>zad3-jpa</module>
         <module>soap-api</module>
         <module>rest-api</module>
         <module>zad1-ear</module>
         <module>soap-connector</module>
         <module>rest-connector</module>
+        <module>zad1-dao</module>
+
+
     </modules>
 
     <properties>
