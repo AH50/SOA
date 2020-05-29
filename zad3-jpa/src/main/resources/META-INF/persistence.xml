@@ -8,6 +8,7 @@ http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
         <class>pl.edu.agh.soa.pro1.SandwichEntity</class>
         <class>pl.edu.agh.soa.pro1.MarkEntity</class>
         <class>pl.edu.agh.soa.pro1.StudentEntity</class>
+        <class>pl.edu.agh.soa.pro1.CardEntity</class>
         <properties>
             <property name="hibernate.connection.datasource" value="java:jboss/datasources/student"/>
             <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/student"/>

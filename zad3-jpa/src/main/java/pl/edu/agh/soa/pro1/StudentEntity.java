@@ -23,8 +23,11 @@ public class StudentEntity {
     @Column
     private int studentId;
 
-    @Column
+    @Column(length = 2000)
     private String photoInBase64;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private CardEntity cardEntity;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<MarkEntity> marksEntities;

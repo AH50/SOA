@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @Builder
 @NoArgsConstructor
-@XmlType(propOrder = {"name", "surname", "studentId", "photoInBase64", "subjectList", "markList"})
+@XmlType(propOrder = {"name", "surname", "studentId", "photoInBase64","card", "subjectList", "markList"})
 @XmlRootElement(name = "student")
 public class Student {
     private String name;
@@ -22,11 +22,17 @@ public class Student {
     private String photoInBase64;
     private List<Subject> subjectList;
     private List<Mark> markList;
+    private Card card;
 
     @XmlElementWrapper(name = "Subjects")
     @XmlElement(name = "subjectList")
     public List<Subject> getSubjectList() {
         return subjectList;
+    }
+
+    @XmlElement(name = "card")
+    public Card getCard() {
+        return card;
     }
 
     @XmlElementWrapper(name = "Marks")
@@ -37,13 +43,14 @@ public class Student {
 
 
 
-    public Student(String name, String surname, int studentId, String photoInBase64, List<Subject> subjectList,List<Mark> markList) {
+    public Student(String name, String surname, int studentId, String photoInBase64, List<Subject> subjectList,List<Mark> markList, Card card) {
         this.name = name;
         this.surname = surname;
         this.studentId = studentId;
         this.photoInBase64 = photoInBase64;
         this.subjectList = subjectList;
         this.markList = markList;
+        this.card=card;
     }
 }
 

@@ -5,6 +5,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 
 
+import pl.edu.agh.soa.pro1.models.Card;
+import pl.edu.agh.soa.pro1.models.Mark;
 import pl.edu.agh.soa.pro1.models.StudentProtobuf;
 import protobuf.MessageWriter;
 
@@ -168,12 +170,17 @@ private StudentProtobuf.Student testGetStudentByIdProtobuf(int id){
             }
         }
         //dodanie studenta wraz z listą przedmiotów
+        Card card = Card.builder()
+                .number(123)
+                .value(100000)
+                .build();
         Student student = Student.builder()
                 .name("Janusz")
                 .surname("Kowal")
                 .studentId(5555)
                 .subjectList(null)
                 .photoInBase64("")
+                .card(card)
                 .build();
 
         Subject subject = Subject.builder()
@@ -187,7 +194,11 @@ private StudentProtobuf.Student testGetStudentByIdProtobuf(int id){
                 .teacher("Tomasz Nowak")
                 .ECTS(3)
                 .build();
-
+        Mark mark = new Mark();
+        mark.setMark(1234567);
+        List<Mark> markList = new ArrayList<>();
+        markList.add(mark);
+        student.setMarkList(markList);
 
         List<Subject> subjects = new ArrayList<>();
         subjects.add(subject);
@@ -203,11 +214,11 @@ private StudentProtobuf.Student testGetStudentByIdProtobuf(int id){
 
         //dodanie zdjęcia studentowi
         System.out.println("\nSet photo");
-        client.setPhoto(123, codeImage("rest-connector/src/main/java/photos/studentProfilePhoto.jpg"));
+        client.setPhoto(5555, codeImage("rest-connector/src/main/java/photos/studentProfilePhoto.jpg"));
 
         //pobranie zdjęcia studenta
         System.out.println("Get photo");
-        client.getPhoto(123);
+        client.getPhoto(5555);
 
         //Protobuf
         System.out.println("\nGet student by ID - Protobuf");

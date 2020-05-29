@@ -23,7 +23,7 @@ public class Subject {
     private List<Student> studentList;
 
     @XmlElementWrapper(name = "Students")
-    @XmlElement(name = "StudentList")
+    @XmlElement(name = "studentList")
     public List<Student> getStudentList() {
         return studentList;
     }

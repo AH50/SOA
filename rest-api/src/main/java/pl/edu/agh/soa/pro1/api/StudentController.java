@@ -3,21 +3,16 @@ package pl.edu.agh.soa.pro1.api;
 import io.swagger.annotations.*;
 import pl.edu.agh.soa.pro1.*;
 import pl.edu.agh.soa.pro1.JWT.JWTTokenNeeded;
-import pl.edu.agh.soa.pro1.models.Mark;
 import pl.edu.agh.soa.pro1.models.Student;
 
 import pl.edu.agh.soa.pro1.models.StudentProtobuf;
 import pl.edu.agh.soa.pro1.models.StudentRepository;
 
 import javax.ejb.EJB;
-import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -38,21 +33,40 @@ public class StudentController {
     public Response getAllStudents(@QueryParam("ID") int Id,
                                    @QueryParam("firstName") String name,
                                    @QueryParam("surname") String surname) {
-        List<Student> studentsList = studentRepository.getStudentList();
+//        List<Student> studentsList = studentRepository.getStudentList();
+        List<Student> studentsList = studentDao.findAllstudents();
 
         if (studentsList == null || studentsList.size() == 0) {
             return Response.status(Response.Status.NOT_FOUND).entity("Student database is empty").build();
         }
         if (name != null) {
-            Student student = studentRepository.getStudentByName(name);
+//            Student student = studentRepository.getStudentByName(name);
+            Student student = null;
+            try {
+                student = studentDao.findbyname(name);
+            } catch (Exception e) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Student with this name not found").build();
+            }
             return Response.status(Response.Status.OK).entity(student).build();
         }
         if (surname != null) {
-            Student student = studentRepository.getStudentBySurname(surname);
+//            Student student = studentRepository.getStudentBySurname(surname);
+            Student student = null;
+            try {
+                student = studentDao.findbysurname(surname);
+            } catch (Exception e) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Student with this surname not found").build();
+            }
             return Response.status(Response.Status.OK).entity(student).build();
         }
         if (Id != 0) {
-            Student student = studentRepository.getStudentByID(Id);
+//            Student student = studentRepository.getStudentByID(Id);
+            Student student = null;
+            try {
+                student = studentDao.findbystudentId(Id);
+            } catch (Exception e) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Student with this id not found").build();
+            }
             return Response.status(Response.Status.OK).entity(student).build();
         }
 
@@ -64,13 +78,6 @@ public class StudentController {
     @ApiOperation(value = "Get student")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getStudentById(@PathParam("studentID") int studentId) {
-//        Student student = studentRepository.getStudentByID(studentID);
-//
-//        if (student != null) {
-//            return Response.status(Response.Status.OK).entity(student).build();
-//        }
-//
-//        return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
         Student student;
         try {
             student = studentDao.findbystudentId(studentId);
@@ -85,18 +92,23 @@ public class StudentController {
     @Path("/{studentID}/photo")
     @ApiOperation(value = "Change student photo")
     @Produces(MediaType.APPLICATION_JSON)
-//    @JWTTokenNeeded
+    @JWTTokenNeeded
     public Response setPhoto(@PathParam("studentID") int studentID, @ApiParam(required = true) @QueryParam("photo") String photoBase64) {
 
-        List<Student> studentsList = studentRepository.getStudentList();
+        Student student = new Student();
 
-        for (Student student : studentsList) {
-            if (student.getStudentId() == studentID) {
-                student.setPhotoInBase64(photoBase64);
-                return Response.status(Response.Status.OK).entity(student).build();
-            }
+        try {
+            student = studentDao.findbystudentId(studentID);
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
         }
-        return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
+        student.setPhotoInBase64(photoBase64);
+        try {
+            studentDao.update(student);
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
+        }
+        return Response.status(Response.Status.OK).entity(student).build();
     }
 
     @PUT
@@ -104,13 +116,22 @@ public class StudentController {
     @Produces(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Change student surname")
 //    @JWTTokenNeeded
-    public Response updateStudentSurname(@PathParam("studentID") int studentID, @ApiParam(required = true, name = "Surname") @QueryParam("surname") String newSurname) {
+    public Response updateStudentSurname(@PathParam("studentID") int studentID, @ApiParam(required = true, name = "surname") @QueryParam("surname") String newSurname) {
 
-        Student student = studentRepository.changeStudentSurname(studentID, newSurname);
-        if (student != null) {
-            return Response.status(Response.Status.OK).entity(student).build();
+        Student student = new Student();
+
+        try {
+            student = studentDao.findbystudentId(studentID);
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
         }
-        return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
+        student.setSurname(newSurname);
+        try {
+            studentDao.update(student);
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
+        }
+        return Response.status(Response.Status.OK).entity(student).build();
     }
 
     @GET
@@ -122,9 +143,16 @@ public class StudentController {
             @ApiResponse(code = 403, message = "Student don't have photo."),
             @ApiResponse(code = 404, message = "Student not found.")})
 
-    public Response getStudentPhoto(@PathParam("studentID") int studentID) {
+    public Response getStudentPhoto(@PathParam("studentID") int studentID)  {
 
-        Student student = studentRepository.getStudentByID(studentID);
+        Student student = null;
+        try {
+            student = studentDao.findbystudentId(studentID);
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Student not found").build();
+        }
+
+//        Student student = studentRepository.getStudentByID(studentID);
 
         byte[] imageBytes = Base64.getDecoder().decode(student.getPhotoInBase64());
         if (student != null) {
@@ -175,45 +203,23 @@ public class StudentController {
         }
     }
 
-    @EJB
-    private SandwichDao sandwichDao = new SandwichDao();
-    @GET
-    @Path("/addkanapka/add")
-    public Response addxxxx() {
-
-        SandwichEntity sandwichEntity = new SandwichEntity();
-        sandwichEntity.setName("ssssssssxxxxxxxxx");
-        sandwichDao.add(sandwichEntity);
-
-        return Response.status(Response.Status.OK).entity("Add kanapka").build();
-    }
-
 
     @GET
-    @Path("/addmark/add")
-    public Response addmark() {
-
-        MarkEntity markEntity = new MarkEntity();
-        markEntity.setMark(5);
-        markDao.add(markEntity);
-
-        return Response.status(Response.Status.OK).entity("Add kanapka").build();
-    }
-
-
-
-    @GET
-    @Path("/addmark/addStudentToDatabase")
+    @Path("/adddata/mockdata")
     public Response addstu() {
-
 
         studentDao.save(studentRepository.getStudentByID(123));
         studentDao.save(studentRepository.getStudentByID(1234));
+        Student s = studentRepository.getStudentByID(123);
+        s.setPhotoInBase64("");
+        try {
+            studentDao.update(s);
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Student not found.").build();        }
 
 
-        return Response.status(Response.Status.OK).entity("Add student to database").build();
+        return Response.status(Response.Status.OK).entity("Data to database").build();
     }
 }
-
 
 
