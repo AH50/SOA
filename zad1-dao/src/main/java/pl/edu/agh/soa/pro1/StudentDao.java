@@ -138,5 +138,9 @@ public class StudentDao {
         return entityManager.createQuery(query).getResultList().get(0);
     }
 
+    public void removeStudentById(int id) throws Exception{
+        StudentEntity s = findbystudentIdEntity(id);
+        entityManager.remove(s);
+    }
 
 }

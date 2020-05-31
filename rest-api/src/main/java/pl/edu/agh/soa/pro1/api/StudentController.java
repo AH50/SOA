@@ -190,17 +190,31 @@ public class StudentController {
     @Path("/{id}/protobuf")
     @ApiOperation("Get Student by ID - Protobuf")
     public Response getStudentByIdProtobuf(@ApiParam(required = true) @PathParam("id") int ID) {
-
         var studentBuilder = StudentProtobuf.Student.newBuilder();
-        if (studentRepository.getStudentByID(ID) != null) {
-            Student student = studentRepository.getStudentByID(ID);
-
+        if (getStudentById(ID).getStatus() != 404) {
+            Student student;
+            try {
+                student = studentDao.findbystudentId(ID);
+            } catch (Exception e) {
+                return Response.status(Response.Status.NOT_FOUND).entity("Student not found.").build();
+            }
             studentBuilder.setId(student.getStudentId()).setName(student.getName()).setSurname(student.getSurname());
             var newStudent = studentBuilder.build();
             return Response.status(Response.Status.OK).entity(newStudent).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).build();
+
         }
+        return Response.status(Response.Status.NOT_FOUND).entity("Student not found.").build();
+
+//        var studentBuilder = StudentProtobuf.Student.newBuilder();
+//        if (studentRepository.getStudentByID(ID) != null) {
+//            Student student = studentRepository.getStudentByID(ID);
+//
+//            studentBuilder.setId(student.getStudentId()).setName(student.getName()).setSurname(student.getSurname());
+//            var newStudent = studentBuilder.build();
+//            return Response.status(Response.Status.OK).entity(newStudent).build();
+//        } else {
+//            return Response.status(Response.Status.NOT_FOUND).build();
+//        }
     }
 
 
@@ -220,6 +234,29 @@ public class StudentController {
 
         return Response.status(Response.Status.OK).entity("Data to database").build();
     }
+
+
+
+    @DELETE
+    @Path("/students/{id}")
+//    @JWTTokenNeeded
+    @ApiOperation("Delete student")
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "Student deleted"),
+            @ApiResponse(code = 404, message = "Student with given id does not exist")
+    })
+    public Response deleteStudent(@ApiParam(required = true) @PathParam("id") int id) {
+        try {
+            studentDao.removeStudentById(id);
+        } catch (Exception e) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Student not found.").build();
+        }
+        return Response.status(Response.Status.OK).build();
+    }
+
 }
+
+
+
 
 
